@@ -318,10 +318,11 @@ app.get('/health', async (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
+const server = app.listen(PORT, '0.0.0.0', async () => {
   console.log('='.repeat(60));
   console.log(`Universal Audio Downloader API v3.0.0`);
   console.log(`Server running on port ${PORT}`);
+  console.log(`Listening on 0.0.0.0:${PORT}`);
   console.log('='.repeat(60));
 
   // Check dependencies
@@ -335,4 +336,13 @@ app.listen(PORT, async () => {
   console.log(`  POST /download-audio - Download audio`);
   console.log(`  POST /get-info - Get video info`);
   console.log('='.repeat(60));
+});
+
+// Handle server errors
+server.on('error', (error) => {
+  console.error('❌ SERVER ERROR:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use`);
+  }
+  process.exit(1);
 });
