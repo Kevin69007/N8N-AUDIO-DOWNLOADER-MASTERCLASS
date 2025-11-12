@@ -7,10 +7,13 @@ RUN apt-get update && \
     python3-pip \
     ffmpeg \
     curl \
-    ca-certificates && \
-    pip3 install --break-system-packages yt-dlp && \
-    apt-get clean && \
+    ca-certificates \
+    wget && \
     rm -rf /var/lib/apt/lists/*
+
+# Install yt-dlp using the recommended method
+RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O /usr/local/bin/yt-dlp && \
+    chmod a+rx /usr/local/bin/yt-dlp
 
 # Set working directory
 WORKDIR /app
@@ -20,21 +23,15 @@ COPY package*.json ./
 RUN npm install --production
 
 # Copy application code
-COPY index.js ./
+COPY . .
 
-# Verify yt-dlp installation
-RUN yt-dlp --version
+# Verify installations
+RUN yt-dlp --version && \
+    ffmpeg -version && \
+    node --version
 
-# Railway will provide PORT environment variable
-# Default to 3000 if not set
-ENV PORT=3000
-
-# Expose the port (Railway will use the PORT env var)
-EXPOSE ${PORT}
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:${PORT}/health || exit 1
+# Expose port (Railway will override with PORT env var)
+EXPOSE 3000
 
 # Start the application
 CMD ["node", "index.js"]
