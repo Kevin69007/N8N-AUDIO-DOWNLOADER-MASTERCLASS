@@ -9,6 +9,13 @@ const app = express();
 
 app.use(express.json());
 
+// Request logging middleware - MUST be before routes
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${req.method} ${req.url} - ${req.ip || req.connection.remoteAddress}`);
+  next();
+});
+
 // Enable CORS for all routes
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -301,7 +308,18 @@ app.post('/get-info', async (req, res) => {
   }
 });
 
-app.get('/health', async (req, res) => {
+// Simple health check without async operations
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'Universal Audio Downloader',
+    version: '3.0.0'
+  });
+});
+
+// Detailed health check with dependencies
+app.get('/health/detailed', async (req, res) => {
   const ytdlpCheck = await checkYtDlp();
 
   res.json({
