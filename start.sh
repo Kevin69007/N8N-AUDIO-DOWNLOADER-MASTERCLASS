@@ -1,28 +1,22 @@
 #!/bin/bash
 
-# Function to handle shutdown signals
-cleanup() {
-    echo "Received shutdown signal, stopping services..."
-    kill -TERM $NODE_PID $PYTHON_PID 2>/dev/null
-    wait $NODE_PID $PYTHON_PID
-    exit 0
-}
+# Simplified startup script for Universal Audio Downloader
+# This script is optional - Docker can run 'node index.js' directly
 
-# Trap signals for graceful shutdown
-trap cleanup SIGTERM SIGINT
+echo "Starting Universal Audio Downloader..."
+echo "Port: ${PORT:-3000}"
 
-# Start Node.js service in background
-node index.js &
-NODE_PID=$!
+# Check if yt-dlp is installed
+if ! command -v yt-dlp &> /dev/null; then
+    echo "ERROR: yt-dlp is not installed"
+    exit 1
+fi
 
-# Start Python Flask service in background
-python3 ytdlp_service.py &
-PYTHON_PID=$!
+# Check if ffmpeg is installed
+if ! command -v ffmpeg &> /dev/null; then
+    echo "WARNING: ffmpeg is not installed (required for audio chunking)"
+fi
 
-# Log PIDs for debugging
-echo "Node.js service started with PID: $NODE_PID"
-echo "Python Flask service started with PID: $PYTHON_PID"
-
-# Wait for all background processes
-wait $NODE_PID $PYTHON_PID
+# Start the Node.js application
+exec node index.js
 

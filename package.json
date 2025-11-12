@@ -1,11 +1,28 @@
 {
-    "name": "vimeo-audio-downloader",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-      "start": "node index.js"
-    },
-    "dependencies": {
-      "express": "^4.18.2"
-    }
+  "name": "universal-audio-downloader",
+  "version": "3.0.0",
+  "description": "Universal audio downloader API powered by yt-dlp supporting 1000+ platforms",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "audio",
+    "downloader",
+    "yt-dlp",
+    "youtube",
+    "vimeo",
+    "soundcloud",
+    "api",
+    "mp3"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
+}
